@@ -1,8 +1,10 @@
 package io.caerulean.sipstack
 
 case class VoiceQualityMessage(
-  fromAddress: String,
   remoteHost: String,
+  fromAddress: String,
+  user: Option[String],
+  realm: Option[String],
   toAddress: Option[String],
   userAgent: Option[String],
   report: VoiceQualityReport
@@ -34,13 +36,13 @@ case class SessionDesc (
   pt: Int,
   pps: Int,
   plc: Int,
-  ssup: Boolean
+  ssup: String
 )
 
 case class MediaEndpoint(
   ip: String,
   port: Int,
-  ssrc: Long
+  ssrc: String
 )
 
 case class JitterBuffer(

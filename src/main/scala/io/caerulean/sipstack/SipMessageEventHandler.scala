@@ -21,7 +21,7 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
 
     // Parse body and convert to RTCP-XR Report
     val result = parseMessage(msg, remoteHost)
-    println("Result -> " + result)
+    JsonUtils.toJson(result) map { json => println("Result -> " + json) }
 
     // TODO: POST report to Web Service
   }
@@ -36,18 +36,30 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
    * @return
    */
   def parseMessage(message: SipMessage, remoteHost: String) : Option[VoiceQualityMessage] = {
-    val fromHeader = message.getFromHeader
-    val fromAddress = fromHeader.getAddress.getURI.toString
+    val fromAddress = message.getFromHeader.getAddress.getURI.toString
+    val fromTuple = extractFromSipUri(fromAddress)
     val toAddress = Try(message.getToHeader.getAddress.getURI.toString).toOption
     val userAgent = Try(message.getHeader("User-Agent").getValue.toString).toOption
-
     val body = Try(message.getContent.toString).toOption
+
     val report = for {
       bodyString <- body
       report <- parseBody(bodyString)
     } yield report
 
-    report.map(VoiceQualityMessage(fromAddress,remoteHost, toAddress,userAgent,_))
+    report.map(VoiceQualityMessage(remoteHost, fromAddress, fromTuple._1, fromTuple._2, toAddress,userAgent,_))
+  }
+
+  /**
+   * Extracts username and realm from a SIP URI
+   * @param uri
+   * @return Tuple containing username and realm
+   */
+  def extractFromSipUri(uri: String) : Tuple2[Option[String],Option[String]] = {
+    val segments = uri.split("@")
+    val user = Try(segments(0).split(":").last).toOption
+    val realm = Try(segments(1)).toOption
+    (user,realm)
   }
 
   /**
@@ -85,7 +97,7 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
     val burstGapLoss = fields.get("burstgaploss").flatMap(toObject[BurstGapLoss](_))
     val delay = fields.get("delay").flatMap(toObject[Delay](_))
     val signal = fields.get("signal").flatMap(toObject[Signal](_))
-    val qualityEst = fields.get("qualityEst").flatMap(toObject[QualityEst](_))
+    val qualityEst = fields.get("qualityest").flatMap(toObject[QualityEst](_))
 
     for {
       sessionReport <- vqSessionReport
@@ -156,7 +168,7 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
     // Array of [X=value,Y=value,...]
     fields.map(field => {
       val segments = field.split('=')
-      segments.head.toLowerCase -> segments.tail.head
+      segments.head.toLowerCase -> segments.last
     }).toMap
   }
 }
