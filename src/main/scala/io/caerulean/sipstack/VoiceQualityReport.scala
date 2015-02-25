@@ -1,6 +1,7 @@
 package io.caerulean.sipstack
 
 case class VoiceQualityMessage(
+  callId: String,
   remoteHost: String,
   fromAddress: String,
   user: Option[String],
@@ -12,10 +13,10 @@ case class VoiceQualityMessage(
 
 case class VoiceQualityReport(
   vqSessionReport: String,
+  callId: String,
   localMetrics: Option[String],
   timestamps: Option[Timestamps],
   sessionDesc: Option[SessionDesc],
-  callId: Option[String],
   dialogId: Option[String],
   localAddr: Option[MediaEndpoint],
   remoteAddr: Option[MediaEndpoint],
