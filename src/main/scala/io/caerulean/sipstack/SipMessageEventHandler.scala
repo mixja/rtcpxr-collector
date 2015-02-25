@@ -118,13 +118,14 @@ class SipMessageEventHandler(config: Config) extends Observer[SipMessageEvent] {
     val qualityEst = fields.get("qualityest").flatMap(toObject[QualityEst](_))
 
     // Create report
-    // VQSessionReport and CallID fields are mandatory
+    // VQSessionReport, CallID, Timestamp fields are mandatory
     // All other fields are options
     for {
       sessionReport <- vqSessionReport
       cid <- callId
+      timeStamp <- timeStamps
     } yield VoiceQualityReport(
-      sessionReport, cid, localMetrics, timeStamps, sessionDesc, dialogId, localAddr,
+      sessionReport, cid, timeStamp, localMetrics, sessionDesc, dialogId, localAddr,
       remoteAddr, jitterBuffer, packetLoss, burstGapLoss, delay, signal, qualityEst)
   }
 

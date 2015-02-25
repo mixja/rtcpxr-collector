@@ -11,11 +11,13 @@ case class VoiceQualityMessage(
   report: VoiceQualityReport
 )
 
+
+
 case class VoiceQualityReport(
   vqSessionReport: String,
   callId: String,
+  timestamps: Timestamps,
   localMetrics: Option[String],
-  timestamps: Option[Timestamps],
   sessionDesc: Option[SessionDesc],
   dialogId: Option[String],
   localAddr: Option[MediaEndpoint],

@@ -1,0 +1,111 @@
+/** Elasticsearch index mapping file
+  * The JSON is defined as an index in Elasticsearch by issuing a PUT request as follows:
+  *
+  *   PUT /{index}/{type}/_mapping
+  *
+  * Example:
+  *   PUT /vquality/report/_mapping where vquality is your ES index and report is your index type
+  */
+{
+  "properties": {
+    "fromAddress" : {"type": "string"},
+    "remoteHost": {"type": "string"},
+    "toAddress": {"type": "string"},
+    "userAgent": {"type": "string"},
+    "report": {
+      "type": "nested",
+      "properties": {
+        "vqSessionReport": {"type": "string"},
+        "localMetrics": {"type": "string"},
+        "timestamps": {
+          "type": "nested",
+          "properties": {
+            "start": {"type":"date"},
+            "stop": {"type":"date"}
+          }
+        },
+        "sessionDesc" : {
+          "type": "nested",
+          "properties": {
+            "pt": {"type": "integer"},
+            "pps": {"type": "integer"},
+            "plc": {"type": "integer"},
+            "ssup": {"type": "string"}
+          }
+        },
+        "callId": {"type": "string"},
+        "dialogId": {"type": "string"},
+        "localAddr": {
+          "type": "nested",
+          "properties": {
+            "ip": {"type": "string"},
+            "port": {"type": "integer"},
+            "ssrc": {"type": "string"}
+          }
+        },
+        "remoteAddr": {
+          "type": "nested",
+          "properties": {
+            "ip": {"type": "string"},
+            "port": {"type": "integer"},
+            "ssrc": {"type": "string"}
+          }
+        },
+        "jitterBuffer": {
+          "type": "nested",
+          "properties": {
+            "jba": {"type": "integer"},
+            "jbr": {"type": "integer"},
+            "jbn": {"type": "integer"},
+            "jbm": {"type": "integer"},
+            "jbx": {"type": "integer"}
+          }
+        },
+        "packetLoss": {
+          "type": "nested",
+          "properties": {
+            "nlr": {"type": "double"},
+            "jdr": {"type": "double"}
+          }
+        },
+        "burstGapLoss": {
+          "type": "nested",
+          "properties": {
+            "bld": {"type": "double"},
+            "bd": {"type": "integer"},
+            "gld": {"type": "double"},
+            "gd": {"type": "integer"},
+            "gmin": {"type": "integer"}
+          }
+        },
+        "delay": {
+          "type": "nested",
+          "properties": {
+            "rtd": {"type": "integer"},
+            "esd": {"type": "integer"},
+            "sowd": {"type": "integer"},
+            "iaj": {"type": "integer"},
+            "maj": {"type": "integer"}
+          }
+        },
+        "signal": {
+          "type": "nested",
+          "properties": {
+            "sl": {"type": "integer"},
+            "nl": {"type": "integer"},
+            "rerl": {"type": "integer"}
+          }
+        },
+        "qualityEst": {
+          "type": "nested",
+          "properties": {
+            "rcg": {"type": "integer"},
+            "extri": {"type": "integer"},
+            "moslq": {"type": "double"},
+            "moscq": {"type": "double"}
+          }
+        }
+      }
+    }
+  }
+}
