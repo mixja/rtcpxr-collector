@@ -1,5 +1,6 @@
 package io.caerulean.sipstack
 
+import com.typesafe.config.Config
 import io.pkts.packet.sip.SipMessage
 import io.sipstack.netty.codec.sip.SipMessageEvent
 import org.joda.time.format.DateTimeFormat
@@ -12,7 +13,7 @@ import scalaj.http.Http
  * Created by jmenga on 24/02/15.
  */
 
-class SipMessageEventHandler() extends Observer[SipMessageEvent] {
+class SipMessageEventHandler(config: Config) extends Observer[SipMessageEvent] {
   override def onNext(value: SipMessageEvent): Unit = {
     val msg = value.getMessage
     val remoteHost = value.getConnection.getRemoteIpAddress
@@ -23,7 +24,7 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
     val result = parseMessage(msg, remoteHost)
 
     // PUT report to Web Service
-    result map { putReport _ }
+    result map { postReport _ }
 
   }
 
@@ -31,29 +32,20 @@ class SipMessageEventHandler() extends Observer[SipMessageEvent] {
     println("SipMessageHandler received an error -> " + error.getMessage)
   }
 
-  def putReport(report: VoiceQualityMessage): Unit = {
-
-    val request = Http("http://localhost:9200/vquality/reports/" + report.callId)
+  /**
+   * 
+   * @param report
+   */
+  def postReport(report: VoiceQualityMessage): Unit = {
+    val request = Http(config.getString("web_store.uri") + report.callId)
         .header("Content-Type", "application/json")
-        .method("PUT")
+        .method(config.getString("web_store.method"))
 
     JsonUtils.toJson(report) map { json =>
       println("Result -> " + json)
       val response = request.postData(json).asString
       println(response)
     }
-
-//    val request = url("http://localhost:9200/vquality/reports/" + report.callId)
-//    val put = request.PUT
-//    JsonUtils.toJson(report) map { json =>
-//      println("Result -> " + json)
-//      put.addHeader("Content-Type", "application/json")
-//      put.addBodyPart(new StringPart("body", json))
-//    }
-//
-//    val response = Http(request OK as.String)
-//    for (r <- response)
-//      println(r)
   }
 
   /**

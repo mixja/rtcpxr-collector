@@ -10,7 +10,7 @@ import rx.lang.scala.subjects.PublishSubject
  * Created by jmenga on 23/02/15.
  */
 @Sharable
-final class UASHandler extends SimpleChannelInboundHandler[SipMessageEvent] {
+final class UASHandler(contentType: String = "application/vq-rtcpxr") extends SimpleChannelInboundHandler[SipMessageEvent] {
 
   private val subject = PublishSubject[SipMessageEvent]()
 
@@ -20,10 +20,10 @@ final class UASHandler extends SimpleChannelInboundHandler[SipMessageEvent] {
 
     println("*** UASHandler received message ***")
     // Filter messages to only RTCP-XR VQ reports
-    val contentType = Option(sipMsg.getContentTypeHeader)
-      .filter(_.getValue.toString.toLowerCase() == "application/vq-rtcpxr")
+    val messageContentType = Option(sipMsg.getContentTypeHeader)
+      .filter(_.getValue.toString.toLowerCase() == contentType)
 
-    val response = contentType
+    val response = messageContentType
       .map(_ => {
         subject.onNext(msg)
         sipMsg.createResponse(200)
