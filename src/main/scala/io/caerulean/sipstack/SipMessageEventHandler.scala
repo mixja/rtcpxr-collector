@@ -65,7 +65,7 @@ class SipMessageEventHandler(config: Config) extends Observer[SipMessageEvent] {
       report <- parseBody(bodyString)
     } yield report
 
-    report.map(r => VoiceQualityMessage(r.callId, remoteHost, fromAddress, fromTuple._1, fromTuple._2, toAddress,userAgent,r))
+    report.map(r => VoiceQualityMessage(r.callId, r.timestamps.start, r.timestamps.stop, remoteHost, fromAddress, fromTuple._1, fromTuple._2, toAddress,userAgent,r))
   }
 
   /**

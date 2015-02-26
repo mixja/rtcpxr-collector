@@ -12,6 +12,11 @@
     "remoteHost": {"type": "string"},
     "toAddress": {"type": "string"},
     "userAgent": {"type": "string"},
+    "callId" : {"type": "string"},
+    "user": {"type": "string"},
+    "realm": {"type": "string"},
+    "start": {"type":"date"},
+    "stop": {"type":"date"},
     "report": {
       "type": "nested",
       "properties": {

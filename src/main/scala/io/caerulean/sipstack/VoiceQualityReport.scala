@@ -2,6 +2,8 @@ package io.caerulean.sipstack
 
 case class VoiceQualityMessage(
   callId: String,
+  start: Long,
+  stop: Long,
   remoteHost: String,
   fromAddress: String,
   user: Option[String],
